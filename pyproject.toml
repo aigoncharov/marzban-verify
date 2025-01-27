@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "marzban-verify"
+version = "0.1.0"
+description = ""
+authors = ["aigoncharov <andrey@goncharov.page>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+python-telegram-bot = "^21.10"
+aiosmtpd = "^1.4.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
