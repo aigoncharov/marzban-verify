@@ -10,7 +10,10 @@ package-mode = false
 python = "^3.12"
 python-telegram-bot = "^21.10"
 aiosmtpd = "^1.4.6"
+dnspython = "^2.7.0"
 
+[tool.poetry.scripts]
+marzban_verify = "marzban_verify:main"
 
 [build-system]
 requires = ["poetry-core"]
