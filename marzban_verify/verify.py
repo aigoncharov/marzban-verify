@@ -153,6 +153,8 @@ async def send_verification_email(email: str, code: str):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command."""
+    chat_id = update.effective_chat.id
+    verification_codes.pop(chat_id, None)
     await update.message.reply_text("Welcome! Please send me your email address to verify it.")
 
 
@@ -198,7 +200,9 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
         # Clean up stored code
         del verification_codes[chat_id]
     else:
-        await update.message.reply_text("Invalid verification code. Please try again.")
+        await update.message.reply_text(
+            "Invalid verification code. Please try again.\nCheck your spam folder.\nIf you still can't find it, restart the verification process with /start."
+        )
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
