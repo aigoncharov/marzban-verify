@@ -259,6 +259,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                         },
                         "status": "active",
                         "username": username,
+                        "proxies": {"vless": {}},
                     },
                 ) as resp:
                     if not resp.ok:
