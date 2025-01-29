@@ -276,7 +276,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                     assert subscription_url != ""
 
                     await update.message.reply_text(
-                        f"Email {stored_email} has been successfully verified!\nYour subscription URL:\n\n{subscription_url}\n\n. Use it in your VPN client. Also use it in the browser to see your current traffic limit."
+                        f"Email {stored_email} has been successfully verified!\nYour subscription URL:\n\n{subscription_url}\n\nUse it in your VPN client. Also use it in the browser to see your current traffic limit."
                     )
                     # Clean up stored code
                     del verification_codes[chat_id]
