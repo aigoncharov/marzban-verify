@@ -259,7 +259,11 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                         },
                         "status": "active",
                         "username": username,
-                        "proxies": {"vless": {}},
+                        "proxies": {
+                            "vless": {
+                                "flow": "xtls-rprx-vision",
+                            }
+                        },
                     },
                 ) as resp:
                     if not resp.ok:
