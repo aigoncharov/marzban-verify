@@ -253,7 +253,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                     json={
                         "data_limit": 25 * (10**9),
                         "data_limit_reset_strategy": "month",
-                        "expire": 7776000,
+                        "expire": datetime.now().timestamp() + 7776000,
                         "inbounds": {
                             "vless": ["VLESS TCP REALITY"],
                         },
