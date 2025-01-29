@@ -249,7 +249,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                 async with session.delete(f"/api/user/{username}"):
                     pass
                 async with session.post(
-                    f"/api/user/{username}",
+                    "/api/user",
                     json={
                         "data_limit": 25 * (10**9),
                         "data_limit_reset_strategy": "montly",
