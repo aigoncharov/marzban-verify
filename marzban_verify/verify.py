@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Store verification codes and received emails
 verification_codes = {}
 
-SMTP_PORT = 465
+SMTP_PORT = 25
 
 
 def get_username(tgid: int, email: str):
@@ -206,8 +206,9 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if not email.endswith("@skoltech.ru"):
-        await update.message.reply_text("Use your @skoltech.ru email address.")
+    allowed_domain = os.environ["ALLOWED_EMAIL_DOMAIN"]
+    if not email.endswith(f"@{allowed_domain}"):
+        await update.message.reply_text(f"Use your @{allowed_domain} email address.")
         return
 
     # Generate and store verification code
