@@ -245,7 +245,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
             username = get_username(chat_id, stored_email)
 
             headers = {"Authorization": f"Bearer {os.environ["ADMIN_TOKEN"]}"}
-            async with aiohttp.ClientSession(base_url="https://127.0.0.1:10000", headers=headers) as session:
+            async with aiohttp.ClientSession(base_url=os.environ["DOMAIN"], headers=headers) as session:
                 async with session.delete(f"/api/user/{username}"):
                     pass
                 async with session.post(
