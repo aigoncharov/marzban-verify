@@ -12,6 +12,8 @@ import asyncio
 import dns.resolver
 import socket
 import aiohttp
+from exchangelib import Credentials, Configuration, Account, Message, Mailbox
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -20,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Store verification codes and received emails
 verification_codes = {}
 
-SMTP_PORT = 587
+SMTP_PORT = 465
 
 
 def get_username(tgid: int, email: str):
@@ -124,7 +126,7 @@ def generate_verification_code():
     return "".join(random.choices(string.digits, k=6))
 
 
-async def send_verification_email(email: str, code: str):
+async def send_verification_email_direct(email: str, code: str):
     """Send verification email through direct MX delivery."""
     try:
         # Create the email message
@@ -145,11 +147,42 @@ async def send_verification_email(email: str, code: str):
         success = await mailer.send_mail(msg["From"], email, msg)
 
         if success:
-            logger.info(f"Verification email sent to {email}")
+            logger.info(f"Verification email sent to {email} via direct MX delivery")
             return True
         else:
             logger.error(f"Failed to send verification email to {email}")
             return False
+
+    except Exception as e:
+        logger.error(f"Error sending verification email: {e}")
+        return False
+
+
+async def send_verification_email_exchange(email: str, code: str):
+    """Send verification email through EWS"""
+    try:
+        creds = Credentials(username=os.environ["MAIL_LOGIN"], password=os.environ["MAIL_PASSWORD"])
+        config = Configuration(server=os.environ["MAIL_SERVER"], credentials=creds)
+        account = Account(
+            primary_smtp_address=os.environ["MAIL_ADDRESS"],
+            config=config,
+            autodiscover=False,
+            access_type="delegate",
+        )
+        message = Message(
+            account=account,
+            subject="Email Verification Code",
+            body=f"Your verification code is: {code}\n\n"
+            "Please enter this code in the Telegram bot to verify your email.",
+            to_recipients=[
+                Mailbox(email_address=email),
+            ],
+        )
+
+        await asyncio.get_running_loop().run_in_executor(None, lambda m: m.send(), message)
+
+        logger.info(f"Verification email sent to {email} via Exchange")
+        return True
 
     except Exception as e:
         logger.error(f"Error sending verification email: {e}")
@@ -181,8 +214,13 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
     code = generate_verification_code()
     verification_codes[update.effective_chat.id] = {"email": email, "code": code}
 
+    if os.environ.get("MAIL_DELIVERY", None) == "DIRECT":
+        email_sent = await send_verification_email_direct(email, code)
+    else:
+        email_sent = await send_verification_email_exchange(email, code)
+
     # Send verification email
-    if await send_verification_email(email, code):
+    if email_sent:
         await update.message.reply_text(
             f"A verification code has been sent to {email}. " "Please enter the 6-digit code here."
         )
