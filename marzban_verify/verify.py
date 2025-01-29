@@ -11,6 +11,7 @@ import smtplib
 import asyncio
 import dns.resolver
 import socket
+import aiohttp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -20,6 +21,10 @@ logger = logging.getLogger(__name__)
 verification_codes = {}
 
 SMTP_PORT = 4200
+
+
+def get_username(tgid: int, email: str):
+    return f"{email}_tgid-{tgid}"
 
 
 class DirectMailer:
@@ -196,9 +201,46 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
     stored_email = verification_codes[chat_id]["email"]
 
     if user_code == stored_code:
-        await update.message.reply_text(f"Email {stored_email} has been successfully verified!")
-        # Clean up stored code
-        del verification_codes[chat_id]
+        try:
+            await update.message.reply_text(f"Code is correct. Creating a user...")
+
+            username = get_username(chat_id, stored_email)
+
+            headers = {"Authorization": f"Bearer {os.environ["ADMIN_TOKEN"]}"}
+            async with aiohttp.ClientSession(base_url="https://127.0.0.1:10000", headers=headers) as session:
+                async with session.delete(f"/api/user/{username}"):
+                    pass
+                async with session.post(
+                    f"/api/user/{username}",
+                    json={
+                        "data_limit": 25 * (10**9),
+                        "data_limit_reset_strategy": "montly",
+                        "expire": 7776000,
+                        "inbounds": {
+                            "vless": ["VLESS TCP REALITY"],
+                        },
+                        "status": "active",
+                        "username": username,
+                    },
+                ) as resp:
+                    if not resp.ok:
+                        raise Exception(f"Failed to create user: {await resp.text()}")
+
+                    body = await resp.json()
+                    subscription_url = body["subscription_url"]
+
+                    assert subscription_url is not None
+                    assert subscription_url != ""
+
+                    await update.message.reply_text(
+                        f"Email {stored_email} has been successfully verified!\nYour subscription URL:\n\n{subscription_url}\n\n. Use it in your VPN client. Also use it in the browser to see your current traffic limit."
+                    )
+                    # Clean up stored code
+                    del verification_codes[chat_id]
+        except Exception as ex:
+            await update.message.reply_text(
+                f"Something went wrong. Try again in 5 mins. If it does not help, reach out to support.\nError:\n{ex}"
+            )
     else:
         await update.message.reply_text(
             "Invalid verification code. Please try again.\nCheck your spam folder.\nIf you still can't find it, restart the verification process with /start."
