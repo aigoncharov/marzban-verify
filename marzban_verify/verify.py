@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # Store verification codes and received emails
 verification_codes = {}
 
-SMTP_PORT = 4200
+SMTP_PORT = 587
 
 
 def get_username(tgid: int, email: str):
@@ -55,7 +55,7 @@ class DirectMailer:
     def deliver_to_mx(self, mx_host, message, rcpt_to):
         """Attempt delivery to a specific MX server."""
         try:
-            with smtplib.SMTP(mx_host, 25, timeout=10) as server:
+            with smtplib.SMTP(mx_host, SMTP_PORT, timeout=10) as server:
                 server.set_debuglevel(1)  # Enable debug output
 
                 # Say HELO
