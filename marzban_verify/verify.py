@@ -1,19 +1,19 @@
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-import re
-import random
-import string
-from email.message import EmailMessage
-import logging
-from datetime import datetime
-import os
-import smtplib
 import asyncio
-import dns.resolver
+import logging
+import os
+import random
+import re
+import smtplib
 import socket
-import aiohttp
-from exchangelib import Credentials, Configuration, Account, Message, Mailbox
+import string
+from datetime import datetime
+from email.message import EmailMessage
 
+import aiohttp
+import dns.resolver
+from exchangelib import Account, Configuration, Credentials, Mailbox, Message
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -132,7 +132,7 @@ async def send_verification_email_direct(email: str, code: str):
         # Create the email message
         msg = EmailMessage()
         msg.set_content(
-            f"Your verification code is: {code}\n\n" "Please enter this code in the Telegram bot to verify your email."
+            f"Your verification code is: {code}\n\nPlease enter this code in the Telegram bot to verify your email."
         )
 
         msg["Subject"] = "Email Verification Code"
@@ -223,11 +223,11 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Send verification email
     if email_sent:
         await update.message.reply_text(
-            f"A verification code has been sent to {email}. " "Please enter the 6-digit code here."
+            f"A verification code has been sent to {email}. Please enter the 6-digit code here."
         )
     else:
         await update.message.reply_text(
-            "Sorry, there was an error sending the verification email. " "Please wait 5 mins and try again."
+            "Sorry, there was an error sending the verification email. Please wait 5 mins and try again."
         )
 
 
@@ -241,18 +241,18 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
 
     if user_code == stored_code:
         try:
-            await update.message.reply_text(f"Code is correct. Creating a user...")
+            await update.message.reply_text("Code is correct. Creating a user...")
 
             username = get_username(chat_id, stored_email)
 
-            headers = {"Authorization": f"Bearer {os.environ["ADMIN_TOKEN"]}"}
+            headers = {"Authorization": f"Bearer {os.environ['ADMIN_TOKEN']}"}
             async with aiohttp.ClientSession(base_url=os.environ["API_BASE_URL"], headers=headers) as session:
                 async with session.delete(f"/api/user/{username}"):
                     pass
                 async with session.post(
                     "/api/user",
                     json={
-                        "data_limit": 25 * (10**9),
+                        "data_limit": 51 * (10**9),
                         "data_limit_reset_strategy": "month",
                         "expire": int(datetime.now().timestamp()) + 7776000,
                         "inbounds": {
