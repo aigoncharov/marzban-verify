@@ -1,0 +1,9 @@
+services:
+  telegram-to-rss:
+    image: aigoncharov/marzban-verify:latest
+    container_name: marzban-verify
+    restart: always
+    env_file:
+      - .env
+
+networks: {}
