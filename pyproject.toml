@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["aigoncharov <andrey@goncharov.page>"]
 readme = "README.md"
-package-mode = false
+packages = [{include = "marzban_verify"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
