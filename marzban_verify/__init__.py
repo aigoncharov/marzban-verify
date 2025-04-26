@@ -1,1 +1,1 @@
-from marzban_verify.verify import main
+from marzban_verify.app import main
