@@ -3,6 +3,7 @@
 Email verification to automatically create accounts in Marzban. Allow your org to setup a VPN account with a couple of Telegram messages and a single email.
 
 Features:
+
 - Whitelist a specific email domain
 - Send verification email vis SMTP and Exchange
 - Simple setup via Docker
