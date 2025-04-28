@@ -32,6 +32,8 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
             logger.debug("handle_verification_code -> user config", user_config)
 
             headers = {"Authorization": f"Bearer {MARZBAN_ADMIN_API_TOKEN}"}
+            logger.debug("handle_verification_code -> MARZBAN_ADMIN_API_TOKEN", len(MARZBAN_ADMIN_API_TOKEN))
+
             async with aiohttp.ClientSession(base_url=MARZBAN_API_BASE_URL, headers=headers) as session:
                 async with session.delete(f"/api/user/{stored_verification_info.username}"):
                     logger.debug("handle_verification_code -> old user deleted", stored_verification_info.username)
