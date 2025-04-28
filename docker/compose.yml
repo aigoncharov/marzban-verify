@@ -1,5 +1,5 @@
 services:
-  telegram-to-rss:
+  marzban-verify:
     image: aigoncharov/marzban-verify:latest
     container_name: marzban-verify
     restart: always
