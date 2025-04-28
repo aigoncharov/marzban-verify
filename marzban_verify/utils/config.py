@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 # Required
@@ -28,3 +29,5 @@ USER_CONFIG = {
 }
 if os.environ.get("USER_CONFIG", None) is not None:
     USER_CONFIG = json.loads(os.environ["USER_CONFIG"])
+
+LOG_LEVEL = os.environ.get("LOG_LEVEL", logging.INFO)

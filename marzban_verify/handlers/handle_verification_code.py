@@ -6,6 +6,7 @@ from telegram.ext import ContextTypes
 
 from marzban_verify.core.verification_code_storage import verification_code_storage
 from marzban_verify.utils.config import MARZBAN_ADMIN_API_TOKEN, MARZBAN_API_BASE_URL, USER_CONFIG
+from marzban_verify.utils.logging import logger
 
 
 async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -28,9 +29,12 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
             if "status" not in user_config:
                 user_config["status"] = "active"
 
+            logger.debug("handle_verification_code -> user config", user_config)
+
             headers = {"Authorization": f"Bearer {MARZBAN_ADMIN_API_TOKEN}"}
             async with aiohttp.ClientSession(base_url=MARZBAN_API_BASE_URL, headers=headers) as session:
                 async with session.delete(f"/api/user/{stored_verification_info.username}"):
+                    logger.debug("handle_verification_code -> old user deleted", stored_verification_info.username)
                     pass
                 async with session.post(
                     "/api/user",
@@ -38,6 +42,10 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                 ) as resp:
                     if not resp.ok:
                         raise Exception(f"Failed to create user: {await resp.text()}")
+
+                    logger.debug(
+                        "handle_verification_code -> replacement user created", stored_verification_info.username
+                    )
 
                     body = await resp.json()
                     subscription_url = body["subscription_url"]
