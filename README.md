@@ -16,12 +16,12 @@ Features:
 3. Create `compose.yml`
     ```yaml
     services:
-    telegram-to-rss:
-        image: aigoncharov/marzban-verify:latest
-        container_name: marzban-verify
-        restart: always
-        env_file:
-            - .env
+        marzban-verify:
+            image: aigoncharov/marzban-verify:latest
+            container_name: marzban-verify
+            restart: always
+            env_file:
+                - .env
     ```
 4. Create `.env` file
    1. Exchange (using a personal email address to send emails to your colleagues)
