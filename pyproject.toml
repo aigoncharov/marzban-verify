@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "marzban-verify"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["aigoncharov <andrey@goncharov.page>"]
 readme = "README.md"
