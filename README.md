@@ -32,10 +32,10 @@ Features:
         ALLOWED_EMAIL_POSTFIX=@example.com
 
         MAIL_DELIVERY=EXCHANGE
-        EWS_MAIL_LOGIN=TODO
-        EWS_MAIL_PASSWORD=TODO
-        EWS_MAIL_SERVER=TODO
-        EWS_MAIL_ADDRESS=TODO
+        EWS_MAIL_LOGIN=
+        EWS_MAIL_PASSWORD=
+        EWS_MAIL_SERVER=
+        EWS_MAIL_ADDRESS=
         ```
     2. SMTP (setup a self-hosted email server to deliver emails, not always available as some hosters block 25 port, also prone to be identified as spam)
         ```
@@ -46,8 +46,9 @@ Features:
 
         MAIL_DELIVERY=DIRECT
         DIRECT_MAILER_SMTP_PORT=25
-        DIRECT_MAILER_SENDER_DOMAIN=TODO
-        DIRECT_MAILER_HELLO_NAME=TODO
+        <!-- https://serverfault.com/questions/305925/what-exactly-should-helo-say -->
+        DIRECT_MAILER_SENDER_DOMAIN=
+        DIRECT_MAILER_HELLO_NAME=
         ```
 5. Start with `docker compose up -d`
 
@@ -55,4 +56,4 @@ Features:
 
 Available as environment variables:
 
-1. `USER_CONFIG`. Set inbounds, expiration date, traffic limit and [more](TODO). Pass a string with a stringified JSON (loadable with `json.loads(...)`). See default [here](TODO).
+1. `USER_CONFIG`. Set inbounds, expiration date, traffic limit and [more](https://gozargah.github.io/marzban/en/docs/api). Pass a string with a stringified JSON (loadable with `json.loads(...)`). See default [here](https://github.com/aigoncharov/marzban-verify/blob/a4aca1d31c9667e1cd2cec84e9f63c96b3685dd3/marzban_verify/utils/config.py#L16).
