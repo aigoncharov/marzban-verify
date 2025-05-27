@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 
 import aiohttp
@@ -22,7 +23,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
         try:
             await update.message.reply_text("Code is correct. Creating a user...")
 
-            user_config = USER_CONFIG
+            user_config = deepcopy(USER_CONFIG)
             user_config["username"] = stored_verification_info.username
             if "expire" in user_config:
                 user_config["expire"] += int(datetime.now().timestamp())
