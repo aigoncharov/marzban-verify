@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 from datetime import datetime
 
@@ -44,7 +45,7 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                     json=user_config,
                 ) as resp:
                     if not resp.ok:
-                        raise Exception(f"Failed to create user: {await resp.text()}")
+                        raise Exception(f"Failed to create user ({json.dumps(user_config)}): {await resp.text()}")
 
                     logger.debug(
                         f"handle_verification_code -> replacement user created {stored_verification_info.username}",
