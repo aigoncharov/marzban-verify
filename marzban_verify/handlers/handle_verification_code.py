@@ -37,6 +37,27 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
             logger.debug(f"handle_verification_code -> MARZBAN_ADMIN_API_TOKEN len={len(MARZBAN_ADMIN_API_TOKEN)}")
 
             async with aiohttp.ClientSession(base_url=MARZBAN_API_BASE_URL, headers=headers) as session:
+                async with session.get(f"/api/user/{stored_verification_info.username}") as check_resp:
+                    if check_resp.status == 200:
+                        user_data = await check_resp.json()
+                        user_status = user_data.get("status")
+                        logger.debug(
+                            f"handle_verification_code -> existing user status: {user_status} "
+                            f"for {stored_verification_info.username}"
+                        )
+                        if user_status != "expired":
+                            await update.message.reply_text(
+                                "Your subscription is still active. You cannot create a new one until the current one expires.\n"
+                                "If you believe this is an error, reach out to support."
+                            )
+                            verification_code_storage.remove(chat_id)
+                            return
+                    elif check_resp.status != 404:
+                        raise Exception(
+                            f"Failed to check user status ({stored_verification_info.username}): "
+                            f"{check_resp.status} {await check_resp.text()}"
+                        )
+
                 async with session.delete(f"/api/user/{stored_verification_info.username}"):
                     logger.debug(f"handle_verification_code -> old user deleted {stored_verification_info.username}")
                     pass
