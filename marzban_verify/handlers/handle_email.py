@@ -7,7 +7,7 @@ from marzban_verify.core.verification_code_storage import verification_code_stor
 from marzban_verify.utils.config import ALLOWED_EMAIL_POSTFIX, MAIL_DELIVERY
 from marzban_verify.utils.logging import logger
 from marzban_verify.utils.username import get_username
-from marzban_verify.utils.validators import is_valid_email
+from marzban_verify.utils.validators import is_valid_email, normalize_email
 
 
 async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -22,7 +22,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         chat_id = update.effective_chat.id
-        email = update.message.text.strip()
+        email = normalize_email(update.message.text.strip())
 
         if not is_valid_email(email):
             await update.message.reply_text(
@@ -30,7 +30,7 @@ async def handle_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-        if not email.endswith(ALLOWED_EMAIL_POSTFIX):
+        if not email.endswith(ALLOWED_EMAIL_POSTFIX.lower()):
             await update.message.reply_text(f"Use your {ALLOWED_EMAIL_POSTFIX} email address.")
             return
 
