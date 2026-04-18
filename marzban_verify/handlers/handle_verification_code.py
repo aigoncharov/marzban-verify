@@ -46,8 +46,10 @@ async def handle_verification_code(update: Update, context: ContextTypes.DEFAULT
                             f"for {stored_verification_info.username}"
                         )
                         if user_status != "expired":
+                            subscription_url = user_data["subscription_url"]
                             await update.message.reply_text(
-                                "Your subscription is still active. You cannot create a new one until the current one expires.\n"
+                                f"Your account is already active.\nYour subscription URL:\n\n{subscription_url}\n\n"
+                                "Use it in your VPN client. Also use it in the browser to see your current traffic limit.\n"
                                 "If you believe this is an error, reach out to support."
                             )
                             verification_code_storage.remove(chat_id)
