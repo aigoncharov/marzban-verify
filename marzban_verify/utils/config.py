@@ -31,3 +31,12 @@ if os.environ.get("USER_CONFIG", None) is not None:
     USER_CONFIG = json.loads(os.environ["USER_CONFIG"])
 
 LOG_LEVEL = os.environ.get("LOG_LEVEL", logging.INFO)
+
+
+def get_self_email() -> str:
+    """Return the operator's own email address for the active mail backend."""
+    if MAIL_DELIVERY == "EXCHANGE":
+        return os.environ["EWS_MAIL_ADDRESS"]
+    elif MAIL_DELIVERY == "DIRECT":
+        return f"noreply@{os.environ['DIRECT_MAILER_SENDER_DOMAIN']}"
+    raise Exception(f"Unsupported mailer {MAIL_DELIVERY}")
